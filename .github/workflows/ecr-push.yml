@@ -33,7 +33,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ${{ inputs.aws-region }}
-          role-to-assume: arn:aws:iam::arn:aws:iam::${{ inputs.aws-account }}:role/gha-${{ inputs.environment }}-${{ github.event.repository.name }}
+          role-to-assume: arn:aws:iam::${{ inputs.aws-account }}:role/gha-${{ inputs.environment }}-${{ github.event.repository.name }}
 
       - name: Login to Amazon ECR
         id: login-ecr
