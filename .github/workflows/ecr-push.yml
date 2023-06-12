@@ -3,11 +3,18 @@ name: authorize to ecr and generate images
 on:
   workflow_call:
     inputs:
+      aws-account:
+        description: "AWS Account ID (numeric form)"
+        type: number
+        default: 819738237059
       aws-region:
-        description: "AWS cluster region"
+        description: "AWS region"
         type: string
       ecr-repository:
-        description: "AWS repository"
+        description: "AWS ECR repository"
+        type: string
+      environment:
+        description: "App environment (e.g. staging, production)"
         type: string
       image-tag:
         description: "Tag for image build"
@@ -25,9 +32,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws-region }}
+          role-to-assume: arn:aws:iam::arn:aws:iam::${{ inputs.aws-account }}:role/gha-${{ inputs.environment }}-${{ github.event.repository.name }}
 
       - name: Login to Amazon ECR
         id: login-ecr
