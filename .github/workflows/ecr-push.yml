@@ -22,7 +22,7 @@ on:
 
 jobs:
   aws-auth-and-push:
-    name: build and push image to ECR Repo
+    name: Build and push docker image to ECR Repo
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +39,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: build and push
+      - name: Build docker image and push to ECR
         shell: bash
         run: |
           if grep -q '^ci-docker-build:' Makefile ; then
