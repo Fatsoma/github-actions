@@ -40,6 +40,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: build and push
+        shell: bash
         run: |
-          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }} .
+          if grep -q '^ci-docker-build:' Makefile ; then
+            make ci-docker-build CI_DOCKER_IMAGE=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }}
+          else
+            docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }} .
+          fi
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }}
