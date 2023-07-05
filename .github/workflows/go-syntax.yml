@@ -16,7 +16,7 @@ jobs:
       - name: Go Format
         run: |
           GOFMT_OUTPUT=$(gofmt -l $(find . -path '*/vendor/*' -prune -o -name '*.go' -print))
-          if [ -n "$FMT_OUTPUT" ] ; then
+          if [ -n "$GOFMT_OUTPUT" ] ; then
             echo 'The following files are not correctly formatted:'
             echo "${GOFMT_OUTPUT}"
             exit 1
