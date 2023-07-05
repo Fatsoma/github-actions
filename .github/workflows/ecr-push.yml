@@ -1,0 +1,50 @@
+name: authorize to ecr and generate images
+
+on:
+  workflow_call:
+    inputs:
+      aws-account:
+        description: "AWS Account ID (numeric form)"
+        type: number
+        default: 819738237059
+      aws-region:
+        description: "AWS region"
+        type: string
+      ecr-repository:
+        description: "AWS ECR repository"
+        type: string
+      environment:
+        description: "App environment (e.g. staging, production)"
+        type: string
+      image-tag:
+        description: "Tag for image build"
+        type: string
+
+jobs:
+  aws-auth-and-push:
+    name: Build and push docker image to ECR Repo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ inputs.aws-region }}
+          role-to-assume: arn:aws:iam::${{ inputs.aws-account }}:role/gha-${{ inputs.environment }}-${{ github.event.repository.name }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build docker image and push to ECR
+        shell: bash
+        run: |
+          if grep -q '^ci-docker-build:' Makefile ; then
+            make ci-docker-build CI_DOCKER_IMAGE=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }}
+          else
+            docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }} .
+          fi
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.image-tag }}
