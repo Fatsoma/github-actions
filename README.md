@@ -1,6 +1,6 @@
 # github-actions
 
-Public repository for reusable github actions 
+Public repository for reusable github actions
 
 As is customary for GitHub Actions, we provide release tags for you to reference in your repository's workflow files. The `v1` tag is a moving tag that will always apply to the latest version 1 train release.
 
@@ -15,6 +15,14 @@ jobs:
       ecr-repository: ${{ github.event.repository.name }}
       environment: staging
       image-tag: latest
+
+  ruby-gem-publish:
+    on:
+      push:
+        branches: main
+    uses: Fatsoma/reusable-actions/.github/workflows/ruby-gem-publish.yml@v1
+    with:
+      gem-name: example-gem
 ```
 
 You can use custom docker build instructions with a `ci-docker-build` make target:
