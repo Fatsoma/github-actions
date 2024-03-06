@@ -26,6 +26,12 @@ jobs:
 
   ruby-lint:
     uses: Fatsoma/reusable-actions/.github/workflows/ruby-lint.yml@v1
+
+  ruby-vulnerabilities:
+    uses: Fatsoma/reusable-actions/.github/workflows/ruby-vulnerabilities.yml@v1
+
+  ruby-test:
+    uses: Fatsoma/reusable-actions/.github/workflows/ruby-test.yml@v1
 ```
 
 You can use custom docker build instructions with a `ci-docker-build` make target:
