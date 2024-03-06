@@ -1,0 +1,38 @@
+name: Ruby Lint
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+
+      - name: Get base and head
+        id: base-head
+        run: |
+          git fetch origin ${{ github.base_ref }} ${{ github.event.pull_request.head.ref }}
+          echo "FORK_POINT=$(git show-branch --merge-base "origin/${{ github.base_ref }}" "origin/${{ github.event.pull_request.head.ref }}")" >> "$GITHUB_OUTPUT"
+          echo "LATEST_COMMIT_IN_PR=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Get changed Ruby files
+        env:
+          FORK_POINT: ${{ steps.base-head.outputs.FORK_POINT }}
+          LATEST_COMMIT_IN_PR: ${{ steps.base-head.outputs.LATEST_COMMIT_IN_PR }}
+          RUBY_PATTERN: (\.r[bu]|\.gemspec|\.podspec|\.jbuilder|\.rake|Gemfile|Rakefile|Capfile|Guardfile|Podfile|Thorfile|Vagrantfile)$
+        id: changed-files
+        run: |
+          echo "CHANGED_RUBY_FILES=$(git diff --diff-filter=ACMR --name-only $FORK_POINT $LATEST_COMMIT_IN_PR | grep -E $RUBY_PATTERN | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Rubocop on changed files
+        env:
+          CHANGED_RUBY_FILES: ${{ steps.changed-files.outputs.CHANGED_RUBY_FILES }}
+        run: |
+          if [ -n "$CHANGED_RUBY_FILES" ]; then
+            gem install rubocop
+            rubocop $CHANGED_RUBY_FILES
+          fi

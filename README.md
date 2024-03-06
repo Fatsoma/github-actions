@@ -23,6 +23,9 @@ jobs:
     uses: Fatsoma/reusable-actions/.github/workflows/ruby-gem-publish.yml@v1
     with:
       gem-name: example-gem
+
+  ruby-lint:
+    uses: Fatsoma/reusable-actions/.github/workflows/ruby-lint.yml@v1
 ```
 
 You can use custom docker build instructions with a `ci-docker-build` make target:
