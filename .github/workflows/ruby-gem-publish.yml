@@ -6,9 +6,15 @@ on:
         description: "Name of the gem to be published"
         type: string
         required: true
+    secrets:
+      BUNDLE_RUBYGEMS__PKG__GITHUB__COM:
+        description: "The GitHub token to use for private gem sources"
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BUNDLE_RUBYGEMS__PKG__GITHUB__COM: ${{ secrets.BUNDLE_RUBYGEMS__PKG__GITHUB__COM }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Ruby
@@ -17,8 +23,6 @@ jobs:
         run: |
           bundle config set --local without development test
           bundle install --jobs 4 --retry 3
-        env:
-          BUNDLE_RUBYGEMS__PKG__GITHUB__COM: ${{secrets.GITHUB_TOKEN}}
       - name: Set Credentials
         run: |
           mkdir -p $HOME/.gem
