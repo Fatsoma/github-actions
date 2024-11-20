@@ -1,0 +1,39 @@
+name: Sent payload to Slack URL
+
+on:
+  workflow_call:
+    inputs:
+      message:
+        description: "Text to be displayed as slack message"
+        type: string
+        required: true
+      repo:
+        description: "Repo's name"
+        type: string
+        required: false
+      url:
+        description: "URL normally used for the CTA"
+        type: string
+        required: false
+      slack_webhook_url:
+        description: "Slack's Webhook endpoint for the caller's purpose"
+        type: string
+        required: true
+
+jobs:
+  notify:
+    name: Send payload to slack
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Post message
+        uses: slackapi/slack-github-action@vv2.0.0
+        with:
+          webhook: ${{ inputs.slack_webhook_url }}
+          webhook-type: webhook-trigger
+          payload-delimiter: "_"
+          payload: |
+            {
+              "message": ${{ inputs.message }},
+              "repo": ${{ inputs.repo }},
+              "url": ${{ inputs.url }}
+            }
