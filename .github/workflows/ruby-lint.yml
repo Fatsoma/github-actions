@@ -2,6 +2,10 @@ name: Ruby Lint
 
 on:
   workflow_call:
+    secrets:
+      BUNDLE_RUBYGEMS__PKG__GITHUB__COM:
+        description: "The GitHub token to use for private gem sources"
+        required: true
 
 jobs:
   lint:
