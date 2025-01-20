@@ -35,6 +35,5 @@ jobs:
           CHANGED_RUBY_FILES: ${{ steps.changed-files.outputs.CHANGED_RUBY_FILES }}
         run: |
           if [ -n "$CHANGED_RUBY_FILES" ]; then
-            gem install rubocop
-            rubocop $CHANGED_RUBY_FILES
+            bundle exec rubocop $CHANGED_RUBY_FILES
           fi
